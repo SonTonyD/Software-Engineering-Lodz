@@ -19,6 +19,8 @@ public class PlayerManager : MonoBehaviour
     private int previousDay;
     private int today;
 
+    private int scoreLastDay;
+
 
     private void Start()
     {
@@ -42,6 +44,9 @@ public class PlayerManager : MonoBehaviour
         //Generate 5 daily tasks if it is a new day
         if (isNewConnection())
         {
+            turnNotDoneTaskToFail();
+            ComputeScore();
+            scoreLastDay += playerScore;
             Generate5DailyTask();
         }
     }
@@ -59,6 +64,7 @@ public class PlayerManager : MonoBehaviour
         this.playerId = playerId;
     }
 
+    //Call when a game finished
     public void UpdateTaskStatus(int taskId, string status)
     {
         foreach (Task task in this.tasks)
@@ -69,6 +75,7 @@ public class PlayerManager : MonoBehaviour
             }
         }
         ComputeScore();
+        playerScore = scoreLastDay + playerScore; 
     }
 
     public void DisplayPopUp(Task[] dailyTasks)
@@ -85,6 +92,17 @@ public class PlayerManager : MonoBehaviour
         //TODO
         //...code...
         return true;
+    }
+
+    private void turnNotDoneTaskToFail()
+    {
+        foreach (Task task in this.tasks)
+        {
+            if (task.getStatus() == "not done")
+            {
+                task.setStatus("failed");
+            }
+        }
     }
 
     private ArrayList Generate5DailyTask()
@@ -116,6 +134,7 @@ public class PlayerManager : MonoBehaviour
         return this.playerScore;
     }
 
+
     private ArrayList FetchTask()
     {
         //TODO Fetch tasks of the player from database
@@ -141,4 +160,5 @@ public class PlayerManager : MonoBehaviour
     }
 
     #endregion
+
 }
