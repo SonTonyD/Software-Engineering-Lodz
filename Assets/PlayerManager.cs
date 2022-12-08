@@ -12,18 +12,33 @@ public class PlayerManager : MonoBehaviour
     private int playerScore = 0;
     public GameObject progressPopupGameObject;
 
-
     private ArrayList tasks = new ArrayList();
     private ProgressPopUp progressPopup;
+
+    [SerializeField]
+    private int previousDay;
+    private int today;
 
 
     private void Start()
     {
+        today = (int)System.DateTime.Now.Day;
+        Debug.Log(previousDay);
+        Debug.Log(today);
+
+        playerId = 23;
+        tasks = new ArrayList(5);
+
         progressPopup = progressPopupGameObject.GetComponent<ProgressPopUp>();
 
         progressPopup.setWaterCondition("GOOD");
         progressPopup.setLitterCondition("GOOD");
         progressPopup.setAirCondition("GOOD");
+        if (today != previousDay)
+        {
+            previousDay = today;
+            Generate5DailyTask();
+        }
 
         //Get WorldDesign class
     }
@@ -31,14 +46,10 @@ public class PlayerManager : MonoBehaviour
     {
         progressPopup.setTextScore(this.playerScore);
         progressPopup.setTextName(this.playerName);
-
-        
     }
 
 
     #region Class Methods and Constructor
-
-    private string[] availableTask = new string[] { "RubbishMinigame", "BrushingTeethMinigame", "SwitchLightsMinigame", "ShoppingMinigame" , "TransportMinigame" };
     public PlayerManager(int playerId)
     {
         this.playerId = playerId;
@@ -46,11 +57,14 @@ public class PlayerManager : MonoBehaviour
 
     public ArrayList Generate5DailyTask()
     {
-        float randomNumber = Random.Range(0, 4);
+        string[] availableTask = new string[] { "RubbishMinigame", "BrushingTeethMinigame", "SwitchLightsMinigame", "ShoppingMinigame", "TransportMinigame" };
         int NUMBER_OF_TASK = 5;
         for (int i = 0; i < NUMBER_OF_TASK; i++)
         {
-            this.tasks.Add(new Task(playerId, 0, this.availableTask[(int)randomNumber], "daily", "not done"));
+            float randomNumber = Random.Range(0, 4);
+            Task currentTask = Task.CreateInstance(playerId, Random.Range(0, 1000), availableTask[(int)randomNumber], "daily", "not done");
+            this.tasks.Add(currentTask);
+            progressPopup.setTask(i, currentTask);
         }
         return this.tasks;
     }
@@ -61,7 +75,10 @@ public class PlayerManager : MonoBehaviour
         {
             if (task.getStatus() == "done")
             {
-                this.playerScore += 1;
+                this.playerScore += 20;
+            } else if (task.getStatus() == "failed")
+            {
+                this.playerScore -= 10;
             }
         }
         return this.playerScore;
@@ -76,6 +93,7 @@ public class PlayerManager : MonoBehaviour
                 task.setStatus(status);
             }
         }
+        ComputeScore();
     }
 
     public void DisplayPopUp(Task[] dailyTasks)

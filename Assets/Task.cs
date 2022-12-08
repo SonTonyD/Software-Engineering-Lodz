@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Task : MonoBehaviour
+public class Task : ScriptableObject
 {
     private int playerId;
     private int id;
@@ -10,13 +10,19 @@ public class Task : MonoBehaviour
     private string type;
     private string status;
 
-    public Task(int playerId, int id, string name, string type, string status)
+    public void Init(int playerId, int id, string name, string type, string status)
     {
         this.playerId = playerId;
         this.id = id;
         this.name = name;
         this.type = type;
         this.status = status;
+    }
+    public static Task CreateInstance(int playerId, int id, string name, string type, string status)
+    {
+        var data = ScriptableObject.CreateInstance<Task>();
+        data.Init(playerId, id, name, type, status);
+        return data;
     }
 
     public void setStatus(string status)
@@ -38,6 +44,16 @@ public class Task : MonoBehaviour
     public int getId()
     {
         return this.id;
+    }
+
+    public string getName()
+    {
+        return this.name;
+    }
+
+    public string getType()
+    {
+        return this.type;
     }
 
 }

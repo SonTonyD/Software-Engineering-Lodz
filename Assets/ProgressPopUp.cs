@@ -27,7 +27,7 @@ public class ProgressPopUp : MonoBehaviour
     public GameObject Task5;
 
 
-    
+    private GameObject[] gameObjectTaskList;
 
 
 
@@ -44,8 +44,10 @@ public class ProgressPopUp : MonoBehaviour
 
 
 
-    void Start()
+    void Awake()
     {
+
+        gameObjectTaskList = new GameObject[] { Task1, Task2, Task3, Task4, Task5};
 
         playerScore = playerScoreGameObject.GetComponent<Text>();
         playerName = playerNameGameObject.GetComponent<Text>();
@@ -82,13 +84,19 @@ public class ProgressPopUp : MonoBehaviour
         this.airCondition.text = condition;
     }
 
-    public void setTask(GameObject currentTaskUI)
+    public void setTask(int taskPosition, Task task)
     {
-        currentTaskType = GetChildWithName(currentTaskUI, "TextTaskType").GetComponent<Text>();
-        currentTaskName = GetChildWithName(currentTaskUI, "TextTaskName").GetComponent<Text>();
-        currentTaskStatus = GetChildWithName(currentTaskUI, "TextTaskStatus").GetComponent<Text>();
+        GameObject currentTask = this.gameObjectTaskList[taskPosition];
 
-        
+        currentTaskType = GetChildWithName(currentTask, "TextTaskType").GetComponent<Text>();
+        currentTaskName = GetChildWithName(currentTask, "TextTaskName").GetComponent<Text>();
+        currentTaskStatus = GetChildWithName(currentTask, "TextTaskStatus").GetComponent<Text>();
+
+        currentTaskType.text = task.getType();
+        currentTaskName.text = task.getName();
+        currentTaskStatus.text = task.getStatus();
+
+
     }
 
     GameObject GetChildWithName(GameObject obj, string name)
